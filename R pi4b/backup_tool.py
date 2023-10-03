@@ -5,10 +5,13 @@ import usb      # pyusb>=1.2.1
 # python -m pip install -r requirements.txt
 
 def find_source_path(source_path):
- from usb.core
+  #from usb.core
+  pass
 
 source_path = '' 
-#def find_dest_path(dest_path):
+def find_dest_path(dest_path):
+  #from usb.core
+  return None
 
 dest_path_1 = ''
 
