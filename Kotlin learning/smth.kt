@@ -1,5 +1,6 @@
-fun fun main() {
-    val readOnlyMapOfFruits: map<String, Int> = mapOf("apple" to 50, "banana" to 20, "kiwi" = 40)
-    println(readOnlyMapOfFruits)
+fun main() {
+    val greenNumbers = listOf(1, 4, 23)
+    val redNumbers = listOf(17, 2)
+    // Write your code here
+    println(${greenNumbers.count()})
 }
-println(readOnlyMapOfFruits("kiwi"))
