@@ -1,5 +1,4 @@
 import kotlin.random.Random
-import kotlin.collections
 
 class Lotto {
     var playerList: MutableList<Person> = mutableListOf()
