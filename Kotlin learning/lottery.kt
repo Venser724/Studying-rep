@@ -1,76 +1,25 @@
 import kotlin.random.Random
 
-class Lotto {
-
-    // определите поле, в котром будут храниться добавленные игроки `Person`
-    // поле thrownNumbers должно хранить в себе набор выброшенных чисел.
-
-    var thrownNumbers: MutableSet<Int> = mutableSetOf() // определите подходящую структуру данных
-    var players: MutableList<Person> = mutableListOf() // определите подходящую структуру данных
-    var winners: MutableList<Person> = mutableListOf()
-
-    var wasWinner: Boolean = false
-
-    fun addPerson(person: Person) {
-        lotto.players.add(person) // добавить игрока в список игроков
+class Game {
+    companion object {
+        val input = Scanner(System.`in`)
     }
     fun start() {
-        if (lotto.players.size < 2) {
-            println("Перед началом игры необходимо добавить хотя бы двух игроков")
-            return
-        }
-        while (lotto.wasWinner == false) {
-            throwNumbers()
-            checkWinners()
-        }
-
-        // вывести сообщение "Перед началом игры необходимо добавить хотя бы двух игроков" и завершить работу, если количество добавленных игроков меньше 2
-
-        // достать номер. Номер может быть в диапазоне от 1 до 99 включительно
-        // после каждого выброшенного числа удалять это число из карточек всех игроков, если такое число имеется
-        // выбрасывать новые числа до тех пор, пока не определится победитель
-        // побеждает тот, у кого в одном из рядов нет больше чисел. Победителей может быть более одного
-        // после того как появляется победитель, для каждого победителя вывести текст "Победитель: [имя_победителя]!!!"
-    }
-}
-
-
-var number: Int = 0
-var lotto: Lotto = Lotto()
-
-
-
-
-fun throwNumbers() {
-    number = Random.nextInt(Person.MIN_NUMBER, Person.MAX_NUMBER)
-    if (!lotto.thrownNumbers.contains(number)) {
-        lotto.thrownNumbers.add(number)
-        println("Выброшенное число: $number")
-    } else {
-        throwNumbers()
-    }
-
-
-    for (player in lotto.players) {
-        for (line in player.card.numbers) {
-            line.value.remove(number)
+        println("Привет, поиграем в лото?")// поздоровайтесь с пользователем - выведите в лог "Привет, поиграем в лото?"
+        val lotto = Lotto()// создайте объект Lotto, для запуска
+        println("Введите имя нового игрока")// спросите у пользователя имя нового игрока "Введите имя нового игрока" и добавьте его в объект Lotto. Используйте input.nextLine() для считывания с консоли.
+        val playerName = input.nextLine()
+        val person = Person(playerName)
+        lotto.addPerson(person)// после добавление спросите у пользователя, хочет ли он добавить ещё одного пользователя "Если хотите добавить ещё игрока - введите любой символ, если хотите начать игру введите 'Нет'". Используйте input.nextLine() для считывания с консоли.
+        println("Если хотите добавить ещё игрока - введите любой символ, если хотите начать игру введите 'Нет'")// если пользователь введёт "Нет" - завершить добавление пользователей и запустить игру Lotto.start(), иначе добавить ещё одного пользователя. Добавление пользователей может быть бесконечным, если пользователь никогда не введёт "Нет"
+        while(input.nextLine() != "Нет") {
+            println("Введите имя нового игрока")
+            val playerName = input.nextLine()
+            val person = Person(playerName)
+            lotto.addPerson(person)
         }
     }
 }
-
-fun checkWinners() {
-    for (player in lotto.players) {
-        for (line in player.card.numbers) {
-            if (line.value.isEmpty()) {
-                lotto.winners.add(player)
-
-                lotto.wasWinner = true
-                break
-            }
-        }
-    }
-}
-
 
 class Card(val numbers: Map<Int, MutableSet<Int>>)
 
@@ -107,17 +56,78 @@ class Person(val name: String) {
     private fun generateNumbers(): Set<Int> {
         val numbers: MutableSet<Int> = mutableSetOf()
 
-        while (numbers.size < Person.NUMBERS_COUNT) {
-            numbers.add(Random.nextInt(Person.MIN_NUMBER, Person.MAX_NUMBER))
+        while (numbers.size < NUMBERS_COUNT) {
+            numbers.add(Random.nextInt(MIN_NUMBER, MAX_NUMBER))
         }
 
         return numbers
     }
 
-    companion object {
+    private companion object {
 
-        const val NUMBERS_COUNT = 15
-        const val MAX_NUMBER = 100
-        const val MIN_NUMBER = 1
+        private const val NUMBERS_COUNT = 15
+        private const val MAX_NUMBER = 100
+        private const val MIN_NUMBER = 1
+    }
+}
+
+class Lotto {
+
+    private val persons: MutableList<Person> = mutableListOf()
+    val thrownNumbers: MutableSet<Int> = mutableSetOf()
+
+    fun addPerson(person: Person) {
+        persons.add(person)
+    }
+
+    fun start() {
+        if (persons.size < 2) {
+            println("Перед началом игры необходимо добавить хотя бы двух игроков")
+        } else {
+            do {
+                val number = throwNumber()
+
+                for (person in persons) {
+                    val cardNumbers = person.card.numbers
+                    for (key in cardNumbers.keys) {
+                        cardNumbers[key]?.remove(number)
+                    }
+                }
+            } while (!hasWinners())
+        }
+    }
+
+    private fun throwNumber(): Int {
+        val number = Random.nextInt(1, 100)
+
+        return if (thrownNumbers.contains(number)) {
+            throwNumber()
+        } else {
+            thrownNumbers.add(number)
+            println("Выброшенное число: $number")
+            number
+        }
+    }
+
+    private fun hasWinners(): Boolean {
+        val winners: MutableList<Person> = mutableListOf()
+
+        for (person in persons) {
+            val cardNumbers = person.card.numbers
+            for (key in cardNumbers.keys) {
+                if (cardNumbers[key]?.isEmpty() == true) {
+                    winners.add(person)
+                }
+            }
+        }
+
+        return if (winners.isEmpty()) {
+            false
+        } else {
+            for (winner in winners) {
+                println("Победитель: ${winner.name}!!!")
+            }
+            true
+        }
     }
 }
