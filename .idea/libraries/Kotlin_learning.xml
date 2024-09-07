@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Kotlin learning">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Kotlin learning/Learning.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Kotlin learning/checkfirstletter.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Kotlin learning/Intervals.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Kotlin learning/URLs.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
